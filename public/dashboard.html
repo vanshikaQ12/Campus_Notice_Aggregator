@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | Campus Notice Aggregator</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <h2>CAMPUS CONNECT</h2>
+
+        <nav>
+            <a href="dashboard.html" class="active">Dashboard</a>
+            <a href="#notices">Notices</a>
+            <a href="profile.html">My Profile</a>
+            <button id="logoutBtn">Logout</button>
+        </nav>
+    </header>
+
+    <main class="container">
+
+        <section class="welcome-section">
+            <div>
+                <p class="tagline">YOUR CAMPUS, ONE PLACE</p>
+                <h1 id="welcomeMessage">Welcome!</h1>
+                <p>Stay updated with everything happening on campus.</p>
+            </div>
+        </section>
+
+        <section class="notice-section" id="notices">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Campus Notices</h2>
+                    <p>Latest announcements and updates.</p>
+                </div>
+            </div>
+
+            <div class="filters">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search notices..."
+                >
+
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="Academic">Academic</option>
+                    <option value="Events">Events</option>
+                    <option value="Placement">Placement</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Administrative">Administrative</option>
+                    <option value="Examinations">Examinations</option>
+                    <option value="Holidays">Holidays</option>
+                </select>
+
+                <select id="semesterFilter">
+                    <option value="">All Semesters</option>
+                    <option value="1">Semester 1</option>
+                    <option value="2">Semester 2</option>
+                    <option value="3">Semester 3</option>
+                    <option value="4">Semester 4</option>
+                    <option value="5">Semester 5</option>
+                    <option value="6">Semester 6</option>
+                    <option value="7">Semester 7</option>
+                    <option value="8">Semester 8</option>
+                </select>
+            </div>
+
+            <div id="noticeList" class="notice-grid">
+                <p>Loading notices...</p>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="js/dashboard.js"></script>
+
+</body>
+</html>

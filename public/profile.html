@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Campus Notice Aggregator</title>
+    <link rel="stylesheet" href="css/profile.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <h2>CAMPUS CONNECT</h2>
+
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="profile.html" class="active">My Profile</a>
+            <button id="logoutBtn">Logout</button>
+        </nav>
+    </header>
+
+    <main class="container">
+
+        <section class="profile-card">
+
+            <div class="profile-avatar" id="profileAvatar">
+                R
+            </div>
+
+            <p class="tagline">ACCOUNT INFORMATION</p>
+
+            <h1 id="profileName">Loading...</h1>
+
+            <p class="profile-description">
+                Your personal campus account details.
+            </p>
+
+            <div class="profile-details">
+
+                <div class="detail">
+                    <span>Full Name</span>
+                    <strong id="detailName">Loading...</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Email Address</span>
+                    <strong id="detailEmail">Loading...</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Account Type</span>
+                    <strong id="detailRole">Loading...</strong>
+                </div>
+
+            </div>
+
+            <a href="dashboard.html" class="back-link">
+                ← Back to Dashboard
+            </a>
+
+        </section>
+
+    </main>
+
+    <script src="js/profile.js"></script>
+
+</body>
+</html>
