@@ -56,9 +56,9 @@ mongoose.connect(process.env.MONGODB_URI)
 
         const PORT = process.env.PORT || 3000;
 
-        app.listen(PORT, () => {
-            console.log(`Campus Notice Aggregator running at http://localhost:${PORT}`);
-        });
+        app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Campus Notice Aggregator running on port ${PORT}`);
+});
     })
     .catch((error) => {
         console.error("MongoDB connection failed:", error.message);
