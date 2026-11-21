@@ -19,18 +19,20 @@ async function loadAdmin() {
 
         if (!response.ok) {
             window.location.href = "index.html";
-            return;
+            return false;
         }
 
         if (data.user.role !== "admin") {
             window.location.href = "dashboard.html";
-            return;
+            return false;
         }
 
         welcomeMessage.textContent = `Welcome, ${data.user.name}!`;
+        return true;
 
     } catch (error) {
         window.location.href = "index.html";
+        return false;
     }
 }
 
@@ -69,8 +71,15 @@ noticeForm.addEventListener("submit", async (event) => {
         }
 
         message.textContent = editingNoticeId
-            ? "Notice updated successfully!"
-            : "Notice published successfully!";
+    ? "Notice updated successfully! ✓"
+    : "Notice published successfully! ✓";
+
+message.style.color = "#FFFFFF";
+message.style.fontWeight = "bold";
+message.style.padding = "12px";
+message.style.background = "rgba(45, 21, 61, 0.55)";
+message.style.borderRadius = "8px";
+message.style.display = "block";
 
         editingNoticeId = null;
         noticeForm.reset();
@@ -236,5 +245,13 @@ logoutBtn.addEventListener("click", async () => {
 });
 
 // START ADMIN DASHBOARD
-loadAdmin();
-loadNotices();
+// START ADMIN DASHBOARD
+async function startAdminDashboard() {
+    const isAdmin = await loadAdmin();
+
+    if (isAdmin) {
+        await loadNotices();
+    }
+}
+
+startAdminDashboard();

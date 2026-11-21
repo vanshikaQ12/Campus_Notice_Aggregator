@@ -1,15 +1,19 @@
+
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 
 const router = express.Router();
 
-// STUDENT / ADMIN SIGNUP
+// SIGNUP — STUDENT AND EVALUATION ADMIN
 router.post("/signup", async (req, res) => {
     try {
-        const { name, email, password, role } = req.body;
+        const { name, email, password, selectedRole } = req.body;
 
-        if (!name || !email || !password) {
+        const normalizedEmail = email?.trim().toLowerCase();
+        const userRole = selectedRole || "student";
+
+        if (!name || !normalizedEmail || !password) {
             return res.status(400).json({
                 message: "Please fill in all required fields."
             });
@@ -21,11 +25,25 @@ router.post("/signup", async (req, res) => {
             });
         }
 
-        // Public signup can only create student accounts.
-        // Admin accounts will be created through a protected process.
-        const userRole = "student";
+        if (!["student", "admin"].includes(userRole)) {
+            return res.status(400).json({
+                message: "Please select a valid role."
+            });
+        }
 
-        const existingUser = await User.findOne({ email });
+        // Admin signup is allowed only in evaluation mode.
+        if (
+            userRole === "admin" &&
+            process.env.EVALUATION_MODE !== "true"
+        ) {
+            return res.status(403).json({
+                message: "Admin signup is currently disabled."
+            });
+        }
+
+        const existingUser = await User.findOne({
+            email: normalizedEmail
+        });
 
         if (existingUser) {
             return res.status(409).json({
@@ -36,13 +54,13 @@ router.post("/signup", async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 12);
 
         const newUser = await User.create({
-            name,
-            email,
+            name: name.trim(),
+            email: normalizedEmail,
             password: hashedPassword,
             role: userRole
         });
 
-        res.status(201).json({
+        return res.status(201).json({
             message: "Account created successfully!",
             user: {
                 id: newUser._id,
@@ -53,17 +71,18 @@ router.post("/signup", async (req, res) => {
         });
 
     } catch (error) {
+        console.error("Signup error:", error);
+
         res.status(500).json({
-            message: "Signup failed.",
-            error: error.message
+            message: "Signup failed."
         });
     }
 });
 
-// LOGIN
+// LOGIN — ROLE-BASED
 router.post("/login", async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, selectedRole } = req.body;
 
         if (!email || !password) {
             return res.status(400).json({
@@ -71,8 +90,16 @@ router.post("/login", async (req, res) => {
             });
         }
 
+        if (!["student", "admin"].includes(selectedRole)) {
+            return res.status(400).json({
+                message: "Please select a valid role."
+            });
+        }
+
+        const normalizedEmail = email.trim().toLowerCase();
+
         const user = await User.findOne({
-            email: email.toLowerCase().trim()
+            email: normalizedEmail
         });
 
         if (!user) {
@@ -81,7 +108,10 @@ router.post("/login", async (req, res) => {
             });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(
+            password,
+            user.password
+        );
 
         if (!isMatch) {
             return res.status(401).json({
@@ -89,23 +119,46 @@ router.post("/login", async (req, res) => {
             });
         }
 
-        req.session.userId = user._id;
-        req.session.userRole = user.role;
+        if (user.role !== selectedRole) {
+            return res.status(403).json({
+                message: "This account does not belong to the selected role."
+            });
+        }
 
-        res.json({
-            message: "Login successful!",
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role
+        req.session.regenerate((error) => {
+            if (error) {
+                return res.status(500).json({
+                    message: "Could not create login session."
+                });
             }
+
+            req.session.userId = user._id;
+            req.session.userRole = user.role;
+
+            req.session.save((saveError) => {
+                if (saveError) {
+                    return res.status(500).json({
+                        message: "Could not save login session."
+                    });
+                }
+
+                res.json({
+                    message: "Login successful!",
+                    user: {
+                        id: user._id,
+                        name: user.name,
+                        email: user.email,
+                        role: user.role
+                    }
+                });
+            });
         });
 
     } catch (error) {
+        console.error("Login error:", error);
+
         res.status(500).json({
-            message: "Login failed.",
-            error: error.message
+            message: "Login failed."
         });
     }
 });
@@ -156,6 +209,8 @@ router.get("/me", async (req, res) => {
         });
 
     } catch (error) {
+        console.error("Fetch user error:", error);
+
         res.status(500).json({
             message: "Could not fetch user details."
         });

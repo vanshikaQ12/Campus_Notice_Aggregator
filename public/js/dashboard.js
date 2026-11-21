@@ -18,19 +18,21 @@ async function loadUser() {
         const data = await response.json();
 
         if (!response.ok) {
-            window.location.href = "index.html";
-            return;
-        }
+    window.location.href = "index.html";
+    return false;
+}
 
-        if (data.user.role !== "student") {
-            window.location.href = "admin.html";
-            return;
-        }
+if (data.user.role !== "student") {
+    window.location.href = "admin.html";
+    return false;
+}
 
-        welcomeMessage.textContent = `Welcome, ${data.user.name}!`;
+welcomeMessage.textContent = `Welcome, ${data.user.name}!`;
+return true;
 
     } catch (error) {
         window.location.href = "index.html";
+        return false;
     }
 }
 
@@ -72,6 +74,7 @@ async function loadNotices() {
     }
 }
 
+
 // Display notice cards
 function displayNotices(notices) {
     noticeList.innerHTML = "";
@@ -99,13 +102,20 @@ function displayNotices(notices) {
         const meta = document.createElement("div");
         meta.className = "notice-meta";
 
+        // Semester badge
         const semester = document.createElement("span");
+        semester.className = "notice-semester";
         semester.textContent = `Semester ${notice.semester}`;
 
-        const date = document.createElement("span");
-        date.textContent = new Date(notice.createdAt).toLocaleDateString();
+        // Expiry date badge
+        const expiry = document.createElement("span");
+        expiry.className = "notice-expiry";
 
-        meta.append(semester, date);
+        expiry.textContent = notice.expiryDate
+            ? `Expires: ${new Date(notice.expiryDate).toLocaleDateString("en-GB")}`
+            : "No expiry date";
+
+        meta.append(semester, expiry);
 
         card.append(category);
 
@@ -120,6 +130,7 @@ function displayNotices(notices) {
         noticeList.appendChild(card);
     });
 }
+
 
 // Search and filters
 searchInput.addEventListener("input", loadNotices);
@@ -142,5 +153,13 @@ logoutBtn.addEventListener("click", async () => {
 });
 
 // Start dashboard
-loadUser();
-loadNotices();
+// START STUDENT DASHBOARD
+async function startStudentDashboard() {
+    const isStudent = await loadUser();
+
+    if (isStudent) {
+        await loadNotices();
+    }
+}
+
+startStudentDashboard();

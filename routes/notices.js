@@ -42,38 +42,56 @@ router.post("/", isAuthenticated, isAdmin, async (req, res) => {
 });
 
 // GET ALL NOTICES — Logged-in users
+
+
+// GET ALL NOTICES — Logged-in users
 router.get("/", isAuthenticated, async (req, res) => {
     try {
         const { category, semester, search } = req.query;
 
         const filter = {
-    $or: [
-        { expiryDate: null },
-        { expiryDate: { $gt: new Date() } }
-    ]
-};
-        if (category) filter.category = category;
+            $and: [
+                {
+                    $or: [
+                        { expiryDate: null },
+                        { expiryDate: { $gt: new Date() } }
+                    ]
+                }
+            ]
+        };
+
+        if (category) {
+            filter.$and.push({ category });
+        }
 
         if (semester) {
             const semesterNumber = Number(semester);
 
-            if (!Number.isInteger(semesterNumber) ||
-                semesterNumber < 1 || semesterNumber > 12) {
+            if (
+                !Number.isInteger(semesterNumber) ||
+                semesterNumber < 1 ||
+                semesterNumber > 12
+            ) {
                 return res.status(400).json({
                     message: "Invalid semester."
                 });
             }
 
-            filter.semester = semesterNumber;
+            filter.$and.push({ semester: semesterNumber });
         }
 
-        if (search) {
-            const safeSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        if (search && search.trim()) {
+            const safeSearch = search.trim().replace(
+                /[.*+?^${}()|[\]\\]/g,
+                "\\$&"
+            );
 
-            filter.$or = [
-                { title: { $regex: safeSearch, $options: "i" } },
-                { description: { $regex: safeSearch, $options: "i" } }
-            ];
+            filter.$and.push({
+                $or: [
+                    { title: { $regex: safeSearch, $options: "i" } },
+                    { description: { $regex: safeSearch, $options: "i" } }
+                ]
+            });
         }
 
         const notices = await Notice.find(filter)
@@ -93,6 +111,7 @@ router.get("/", isAuthenticated, async (req, res) => {
     }
 });
 
+
 // GET ONE NOTICE — Logged-in users
 router.get("/:id", isAuthenticated, async (req, res) => {
     try {
@@ -102,8 +121,13 @@ router.get("/:id", isAuthenticated, async (req, res) => {
             });
         }
 
-        const notice = await Notice.findById(req.params.id)
-            .populate("createdBy", "name email");
+        const notice = await Notice.findOne({
+    _id: req.params.id,
+    $or: [
+        { expiryDate: null },
+        { expiryDate: { $gt: new Date() } }
+    ]
+}).populate("createdBy", "name email");
 
         if (!notice) {
             return res.status(404).json({

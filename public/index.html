@@ -4,122 +4,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campus Notice Aggregator | Login</title>
-
+    <title>Campus Connect</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <main class="auth-container">
+<main class="auth-container">
 
-        <section class="auth-left">
-            <p class="brand">CAMPUS CONNECT</p>
+    <section class="auth-left">
+        <div class="welcome-content">
+            <span class="tagline">STAY INFORMED. STAY CONNECTED.</span>
 
-            <div class="welcome-content">
-                <span class="tagline">STAY INFORMED. STAY CONNECTED.</span>
+            <h1>
+                Your Campus.<br>
+                Your Updates.<br>
+                <span>One Place.</span>
+            </h1>
 
-                <h1>Your Campus.<br>
-                    Your Updates.<br>
-                    <span>One Place.</span>
-                </h1>
+            <p>
+                Never miss an important campus announcement.
+                Access academic updates, events, placements
+                and more — all in one place.
+            </p>
+        </div>
 
-                <p>
-                    Never miss an important campus announcement.
-                    Access academic updates, events, placements
-                    and more — all in one place.
+        <p class="footer-text">Made for the campus community.</p>
+    </section>
+
+    <section class="auth-right">
+        <div class="auth-card">
+
+            <!-- ROLE SELECTION -->
+            <div id="roleScreen">
+                <div class="form-heading">
+                    <h2>Welcome to Campus Connect</h2>
+                    <p>Choose your role to continue.</p>
+                </div>
+
+                <div class="role-options">
+                    <button type="button" class="role-btn" data-role="admin">
+                        ADMIN →
+                    </button>
+
+                    <button type="button" class="role-btn" data-role="student">
+                        STUDENT →
+                    </button>
+                </div>
+            </div>
+
+            <!-- ACCOUNT CHOICE -->
+            <div id="accountScreen" hidden>
+                <div class="form-heading">
+                    <h2 id="accountTitle">Welcome!</h2>
+                    <p>Are you new here or do you already have an account?</p>
+                </div>
+
+                <div class="role-options">
+                    <button type="button" id="goSignup" class="role-btn">
+                        Sign Up →
+                    </button>
+
+                    <button type="button" id="goLogin" class="role-btn">
+                        Login →
+                    </button>
+                </div>
+
+                <p class="switch-text">
+                    <a href="#" id="changeRole">← Change role</a>
                 </p>
             </div>
 
-            <p class="footer-text">Made for the campus community.</p>
-        </section>
-
-
-        <section class="auth-right">
-
-            <div class="auth-card">
-
+            <!-- LOGIN FORM -->
+            <form id="loginForm" hidden>
                 <div class="form-heading">
-                    <h2 id="formTitle">Welcome Back!</h2>
-                    <p id="formSubtitle">Login to access your campus updates.</p>
+                    <h2 id="loginHeading">Welcome Back!</h2>
+                    <p>Login to access your campus updates.</p>
                 </div>
 
+                <label for="loginEmail">Email Address</label>
+                <input
+                    type="email"
+                    id="loginEmail"
+                    placeholder="Enter your email"
+                    required
+                >
 
-                <!-- LOGIN FORM -->
-                <form id="loginForm">
+                <label for="loginPassword">Password</label>
+                <input
+                    type="password"
+                    id="loginPassword"
+                    placeholder="Enter your password"
+                    required
+                >
 
-                    <label for="loginEmail">Email Address</label>
-                    <input
-                        type="email"
-                        id="loginEmail"
-                        placeholder="Enter your email"
-                        required
-                    >
+                <button type="submit">Login →</button>
 
-                    <label for="loginPassword">Password</label>
-                    <input
-                        type="password"
-                        id="loginPassword"
-                        placeholder="Enter your password"
-                        required
-                    >
+                <p class="switch-text">
+                    <a href="#" id="backToAccount">← Back</a>
+                </p>
+            </form>
 
-                    <button type="submit">Login →</button>
+            <!-- SIGNUP FORM -->
+            <form id="signupForm" hidden>
+                <div class="form-heading">
+                    <h2>Create Account</h2>
+                    <p>Join your campus community.</p>
+                </div>
 
-                    <p class="switch-text">
-                        Don't have an account?
-                        <a href="#" id="showSignup">Sign up</a>
-                    </p>
+                <label for="signupName">Full Name</label>
+                <input
+                    type="text"
+                    id="signupName"
+                    placeholder="Enter your full name"
+                    required
+                >
 
-                </form>
+                <label for="signupEmail">Email Address</label>
+                <input
+                    type="email"
+                    id="signupEmail"
+                    placeholder="Enter your email"
+                    required
+                >
 
+                <label for="signupPassword">Password</label>
+                <input
+                    type="password"
+                    id="signupPassword"
+                    placeholder="Create a password"
+                    minlength="6"
+                    required
+                >
 
-                <!-- SIGNUP FORM -->
-                <form id="signupForm" hidden>
+                <button type="submit">Create Account →</button>
 
-                    <label for="signupName">Full Name</label>
-                    <input
-                        type="text"
-                        id="signupName"
-                        placeholder="Enter your full name"
-                        required
-                    >
+                <p class="switch-text">
+                    Already have an account?
+                    <a href="#" id="backToLogin">Login</a>
+                </p>
+            </form>
 
-                    <label for="signupEmail">Email Address</label>
-                    <input
-                        type="email"
-                        id="signupEmail"
-                        placeholder="Enter your email"
-                        required
-                    >
+            <p id="message"></p>
 
-                    <label for="signupPassword">Password</label>
-                    <input
-                        type="password"
-                        id="signupPassword"
-                        placeholder="Create a password"
-                        minlength="6"
-                        required
-                    >
+        </div>
+    </section>
 
-                    <button type="submit">Create Account →</button>
+</main>
 
-                    <p class="switch-text">
-                        Already have an account?
-                        <a href="#" id="showLogin">Login</a>
-                    </p>
-
-                </form>
-
-                <p id="message"></p>
-
-            </div>
-
-        </section>
-
-    </main>
-
-    <script src="js/auth.js"></script>
+<script src="js/auth.js"></script>
 
 </body>
 </html>

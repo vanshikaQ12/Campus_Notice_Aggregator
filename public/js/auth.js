@@ -1,44 +1,101 @@
+
+const roleScreen = document.getElementById("roleScreen");
+const accountScreen = document.getElementById("accountScreen");
+
 const loginForm = document.getElementById("loginForm");
 const signupForm = document.getElementById("signupForm");
 
-const formTitle = document.getElementById("formTitle");
-const formSubtitle = document.getElementById("formSubtitle");
+const accountTitle = document.getElementById("accountTitle");
+const loginHeading = document.getElementById("loginHeading");
+
+const goSignup = document.getElementById("goSignup");
+const goLogin = document.getElementById("goLogin");
+
+const changeRole = document.getElementById("changeRole");
+const backToAccount = document.getElementById("backToAccount");
+const backToLogin = document.getElementById("backToLogin");
+
 const message = document.getElementById("message");
 
-const showSignup = document.getElementById("showSignup");
-const showLogin = document.getElementById("showLogin");
+let selectedRole = "";
 
-// Switch to signup form
-showSignup.addEventListener("click", (event) => {
+// SELECT ADMIN OR STUDENT
+document.querySelectorAll(".role-btn[data-role]").forEach(button => {
+    button.addEventListener("click", () => {
+        selectedRole = button.dataset.role;
+
+        roleScreen.hidden = true;
+        accountScreen.hidden = false;
+
+        accountTitle.textContent =
+            selectedRole === "admin" ? "Admin Account" : "Student Account";
+
+        goSignup.hidden = false;
+        message.textContent = "";
+    });
+});
+
+// CHANGE ROLE
+changeRole.addEventListener("click", event => {
     event.preventDefault();
 
+    accountScreen.hidden = true;
+    roleScreen.hidden = false;
+
+    selectedRole = "";
+    message.textContent = "";
+});
+
+// OPEN SIGNUP
+goSignup.addEventListener("click", () => {
+    accountScreen.hidden = true;
     loginForm.hidden = true;
     signupForm.hidden = false;
-
-    formTitle.textContent = "Create Account";
-    formSubtitle.textContent = "Join your campus community.";
 
     message.textContent = "";
 });
 
-// Switch to login form
-showLogin.addEventListener("click", (event) => {
+// OPEN LOGIN
+goLogin.addEventListener("click", () => {
+    accountScreen.hidden = true;
+    signupForm.hidden = true;
+    loginForm.hidden = false;
+
+    loginHeading.textContent =
+        selectedRole === "admin" ? "Admin Login" : "Student Login";
+
+    message.textContent = "";
+});
+
+// BACK TO ACCOUNT OPTIONS
+backToAccount.addEventListener("click", event => {
+    event.preventDefault();
+
+    loginForm.hidden = true;
+    signupForm.hidden = true;
+    accountScreen.hidden = false;
+
+    message.textContent = "";
+});
+
+// BACK FROM SIGNUP TO LOGIN
+backToLogin.addEventListener("click", event => {
     event.preventDefault();
 
     signupForm.hidden = true;
     loginForm.hidden = false;
 
-    formTitle.textContent = "Welcome Back!";
-    formSubtitle.textContent = "Login to access your campus updates.";
+    loginHeading.textContent =
+        selectedRole === "admin" ? "Admin Login" : "Student Login";
 
     message.textContent = "";
 });
 
 // LOGIN
-loginForm.addEventListener("submit", async (event) => {
+loginForm.addEventListener("submit", async event => {
     event.preventDefault();
 
-    const email = document.getElementById("loginEmail").value;
+    const email = document.getElementById("loginEmail").value.trim();
     const password = document.getElementById("loginPassword").value;
 
     try {
@@ -48,7 +105,11 @@ loginForm.addEventListener("submit", async (event) => {
                 "Content-Type": "application/json"
             },
             credentials: "same-origin",
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({
+                email,
+                password,
+                selectedRole
+            })
         });
 
         const data = await response.json();
@@ -58,25 +119,36 @@ loginForm.addEventListener("submit", async (event) => {
             return;
         }
 
-        message.textContent = "Login successful!";
+        if (data.user?.role !== selectedRole) {
+            await fetch("/api/auth/logout", {
+                method: "POST",
+                credentials: "same-origin"
+            });
 
-        if (data.user.role === "admin") {
-            window.location.href = "admin.html";
-        } else {
-            window.location.href = "dashboard.html";
+            message.textContent =
+                "This account does not belong to the selected role.";
+            return;
         }
+
+        window.location.href =
+            selectedRole === "admin" ? "admin.html" : "dashboard.html";
 
     } catch (error) {
         message.textContent = "Unable to connect to the server.";
     }
 });
 
-// SIGNUP
-signupForm.addEventListener("submit", async (event) => {
+// SIGNUP — BOTH ROLES
+signupForm.addEventListener("submit", async event => {
     event.preventDefault();
 
-    const name = document.getElementById("signupName").value;
-    const email = document.getElementById("signupEmail").value;
+    if (!["admin", "student"].includes(selectedRole)) {
+        message.textContent = "Please select a role first.";
+        return;
+    }
+
+    const name = document.getElementById("signupName").value.trim();
+    const email = document.getElementById("signupEmail").value.trim();
     const password = document.getElementById("signupPassword").value;
 
     try {
@@ -86,7 +158,12 @@ signupForm.addEventListener("submit", async (event) => {
                 "Content-Type": "application/json"
             },
             credentials: "same-origin",
-            body: JSON.stringify({ name, email, password })
+            body: JSON.stringify({
+                name,
+                email,
+                password,
+                selectedRole
+            })
         });
 
         const data = await response.json();
@@ -96,17 +173,39 @@ signupForm.addEventListener("submit", async (event) => {
             return;
         }
 
-        message.textContent = "Account created! Please log in.";
+        // AUTOMATIC LOGIN AFTER SIGNUP
+        const loginResponse = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "same-origin",
+            body: JSON.stringify({
+                email,
+                password,
+                selectedRole
+            })
+        });
 
-        document.getElementById("loginEmail").value = email;
+        const loginData = await loginResponse.json();
 
-        signupForm.hidden = true;
-        loginForm.hidden = false;
+        if (
+            !loginResponse.ok ||
+            loginData.user?.role !== selectedRole
+        ) {
+            message.textContent =
+                "Account created, but automatic login failed. Please log in.";
+            signupForm.hidden = true;
+            loginForm.hidden = false;
 
-        formTitle.textContent = "Welcome Back!";
-        formSubtitle.textContent = "Login to access your campus updates.";
+            loginHeading.textContent =
+                selectedRole === "admin" ? "Admin Login" : "Student Login";
 
-        signupForm.reset();
+            return;
+        }
+
+        window.location.href =
+            selectedRole === "admin" ? "admin.html" : "dashboard.html";
 
     } catch (error) {
         message.textContent = "Unable to connect to the server.";

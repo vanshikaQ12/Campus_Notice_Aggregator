@@ -6,19 +6,34 @@
 }
 
 :root {
+    /* Campus Connect palette */
     --white: #FFFFFF;
-    --dark: #20221F;
-    --lime: #C6FF00;
-    --grey: #777777;
-    --border: #E8E8E8;
+    --purple-light: #DCC6F5;
+    --purple-mid: #A77BD1;
+    --purple-dark: #49245F;
+    --purple-deep: #2D153D;
+
+    --peach: #FBE4D8;
+    --rose: #DFB6B2;
+    --mauve: #854F6C;
+
+    --grey: #E9DFF0;
+    --border: rgba(255, 255, 255, 0.25);
 }
 
 body {
     font-family: Arial, sans-serif;
-    background: var(--white);
-    color: var(--dark);
+    background: linear-gradient(
+        to bottom,
+        var(--purple-light) 0%,
+        var(--purple-mid) 45%,
+        var(--purple-dark) 100%
+    );
+    color: var(--white);
     min-height: 100vh;
 }
+
+/* MAIN AUTH LAYOUT */
 
 .auth-container {
     min-height: 100vh;
@@ -29,7 +44,7 @@ body {
 /* LEFT SECTION */
 
 .auth-left {
-    background: var(--dark);
+    background: transparent;
     color: var(--white);
     padding: 55px 65px;
     display: flex;
@@ -41,6 +56,7 @@ body {
     font-size: 15px;
     font-weight: bold;
     letter-spacing: 3px;
+    color: var(--white);
 }
 
 .welcome-content {
@@ -48,7 +64,7 @@ body {
 }
 
 .tagline {
-    color: var(--lime);
+    color: var(--peach);
     font-size: 11px;
     font-weight: bold;
     letter-spacing: 2px;
@@ -59,22 +75,24 @@ body {
     line-height: 1.15;
     margin: 25px 0;
     letter-spacing: -2px;
+    color: var(--white);
 }
 
 .welcome-content h1 span {
-    color: var(--lime);
+    color: var(--peach);
 }
 
 .welcome-content p {
-    color: #C7C7C7;
+    color: var(--white);
     font-size: 15px;
     line-height: 1.8;
     max-width: 390px;
 }
 
 .footer-text {
-    color: #A8A8A8;
+    color: var(--white);
     font-size: 12px;
+    opacity: 0.85;
 }
 
 /* RIGHT SECTION */
@@ -84,12 +102,18 @@ body {
     align-items: center;
     justify-content: center;
     padding: 35px;
-    background: var(--white);
+    background: transparent;
 }
 
 .auth-card {
     width: 100%;
     max-width: 410px;
+    background: rgba(45, 21, 61, 0.38);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 38px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 15px 45px rgba(35, 12, 49, 0.18);
 }
 
 .form-heading {
@@ -100,10 +124,12 @@ body {
     font-size: 32px;
     margin-bottom: 10px;
     letter-spacing: -1px;
+    color: var(--white);
 }
 
 .form-heading p {
-    color: var(--grey);
+    color: var(--white);
+    opacity: 0.85;
     font-size: 14px;
 }
 
@@ -122,28 +148,35 @@ form label {
     font-size: 13px;
     font-weight: bold;
     margin-bottom: 9px;
+    color: var(--white);
 }
 
 form input {
     width: 100%;
     padding: 15px;
     margin-bottom: 23px;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255, 255, 255, 0.35);
     border-radius: 10px;
-    background: #FAFAFA;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--purple-deep);
     font-size: 14px;
     outline: none;
     transition: 0.2s;
 }
 
+form input::placeholder {
+    color: #806C8D;
+}
+
 form input:focus {
-    border-color: var(--dark);
+    border-color: var(--peach);
     background: var(--white);
+    box-shadow: 0 0 0 3px rgba(251, 228, 216, 0.2);
 }
 
 form button {
-    background: var(--lime);
-    color: var(--dark);
+    background: var(--peach);
+    color: var(--purple-deep);
     border: none;
     padding: 16px;
     border-radius: 10px;
@@ -154,19 +187,19 @@ form button {
 }
 
 form button:hover {
-    background: #B4EA00;
+    background: var(--rose);
     transform: translateY(-2px);
 }
 
 .switch-text {
     text-align: center;
     margin-top: 25px;
-    color: var(--grey);
+    color: var(--white);
     font-size: 13px;
 }
 
 .switch-text a {
-    color: var(--dark);
+    color: var(--peach);
     font-weight: bold;
     text-decoration: none;
 }
@@ -179,6 +212,7 @@ form button:hover {
     margin-top: 18px;
     font-size: 13px;
     text-align: center;
+    color: var(--white);
 }
 
 /* MOBILE RESPONSIVENESS */
@@ -202,6 +236,63 @@ form button:hover {
     }
 
     .auth-right {
-        padding: 45px 25px;
+        padding: 35px 25px;
     }
+
+    .auth-card {
+        padding: 28px 23px;
+    }
+}
+
+
+/* ROLE SELECTION AND ACCOUNT OPTIONS */
+
+#roleScreen,
+#accountScreen {
+    width: 100%;
+}
+
+.role-options {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.role-btn {
+    width: 100%;
+    padding: 17px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 10px;
+    background: var(--peach);
+    color: var(--purple-deep);
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.role-btn:hover {
+    background: var(--rose);
+    transform: translateY(-2px);
+}
+
+#roleScreen[hidden],
+#accountScreen[hidden],
+#loginForm[hidden],
+#signupForm[hidden] {
+    display: none;
+}
+
+#changeRole,
+#backToAccount,
+#backToLogin {
+    color: var(--peach);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#changeRole:hover,
+#backToAccount:hover,
+#backToLogin:hover {
+    text-decoration: underline;
 }
